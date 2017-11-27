@@ -1,0 +1,103 @@
+<!--<div class="card">
+    <div class="card-header">
+        <div class="input-group">
+            <input type="text" class="form-control" placeholder="Search for..." aria-label="Search for...">
+            <span class="input-group-btn">
+                                  <button class="btn btn-secondary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Go!</button>
+                                </span>
+        </div>
+    </div>
+    <div *ngIf="reviews">
+        <div class="card-body">
+            <table class="table table-striped" [mfData]="data" #mf="mfDataTable" [mfRowsOnPage]="5" [mfSortBy]="any">
+                <thead>
+                    <tr>
+                        <th style="width: 60%">
+                            <mfDefaultSorter>Review</mfDefaultSorter>
+                        </th>
+                        <th style="width: 20%">
+                            <mfDefaultSorter>Date</mfDefaultSorter>
+                        </th>
+                        <th style="width: 20%">
+                            <mfDefaultSorter>Rating</mfDefaultSorter>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let review of reviews">
+                        <td>{{ review.reviewTitle }}</td>
+                        <td>{{review.reviewDate}}</td>
+                        <td>{{review.reviewRating}}</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+        <div class="container">
+            <div class="row" *ngFor="let post of posts">
+                <div class="card card-block">
+                    <h4 class="card-title">{{ post.reviewTitle }}</h4>
+                    <p class="card-text">{{post.reviewDate}}</p>
+                    <p class="card-text">{{post.reviewRating}}</p>
+                </div>
+            </div>
+        </div> 
+</div>
+</div>
+<div *ngIf="reviews === undefined">
+    No results found with your search term
+</div>
+<div class="card-footer text-muted">
+    2 days ago
+</div>
+</div> -->
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <form (ngSubmit)="search()" #heroForm="ngForm">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="name" required [(ngModel)]="model.name" name="name" #name="ngModel">
+                        <span class="input-group-btn">
+                          <button class="btn btn-success" type="submit" [disabled]="!heroForm.form.valid">Go!</button>
+                    </span>
+                    </div>
+                    <div [hidden]="name.valid || name.pristine" class="alert alert-danger">
+                        Name is required
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div [hidden]="!submitted">
+            <div *ngIf="reviews">
+                <div class="card-body">
+                    <table class="table table-striped" [mfData]="data" #mf="mfDataTable" [mfRowsOnPage]="5" [mfSortBy]="any">
+                        <thead>
+                            <tr>
+                                <th style="width: 60%">
+                                    <mfDefaultSorter>Review</mfDefaultSorter>
+                                </th>
+                                <th style="width: 20%">
+                                    <mfDefaultSorter>Date</mfDefaultSorter>
+                                </th>
+                                <th style="width: 20%">
+                                    <mfDefaultSorter>Rating</mfDefaultSorter>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let review of reviews">
+                                <td>{{review.reviewTitle}}</td>
+                                <td>{{review.reviewDate}}</td>
+                                <td>{{review.reviewRating}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div *ngIf="reviews === undefined">
+                No results found with your search term
+            </div>
+        </div>
+    </div>
+</div>
