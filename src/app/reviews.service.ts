@@ -15,6 +15,6 @@ export class ReviewsService {
     .set('Authorization', 'my-auth-token')
     .set('Content-Type', 'application/json');
 console.log(obj);
-    return this.http.post('/api/scrape', obj).map(res => res.json());
+    return this.http.post('http://localhost:8765/api/scrape', obj).map(res => res.json());
   }
 }  

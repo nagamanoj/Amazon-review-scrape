@@ -57,5 +57,16 @@
     "ts-node": "~3.2.0",
     "tslint": "~5.3.2",
     "typescript": "~2.4.2"
-  }
+  },
+  "description": "This is an example for scraping the amazon review pages and displaying the contents in a grid in the web page.",
+  "main": "karma.conf.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nagamanoj/Amazon-review-scrape.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/nagamanoj/Amazon-review-scrape/issues"
+  },
+  "homepage": "https://github.com/nagamanoj/Amazon-review-scrape#readme"
 }

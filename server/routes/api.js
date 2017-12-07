@@ -1,16 +1,12 @@
 const express = require('express');
 var cheerio = require('cheerio');
-// declare axios for making http requests
-const axios = require('axios');
 const router = express.Router();
-var request = require('request');
 
+var Promise = require('bluebird');
+var Request = Promise.promisifyAll(require('request'));
 
-var reviewTitle, reviewDate, reviewRating, reviewTitleText, reviewDateText, reviewRatingText;
-var reviewTitleArr = [];
-var reviewDateArr = [];
-var reviewRatingArr = [];
-
+var _ = require('lodash');
+ 
 router.all("/*", function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
@@ -26,61 +22,57 @@ router.get('/', (req, res) => {
 
 router.post('/scrape', (req, res) => {
     //set the scraper url
-    var url = [];
-
-    var detailsArray = [];
-    console.log(url);
-    console.log("reviewTitleArr", reviewTitleArr);
-    console.log("reviewDateArr", reviewDateArr);
-    console.log("reviewRatingArr", reviewRatingArr);
-    //console.log(req.body.url.name);
+    var url_array = [];
     for (var i = 1; i < 4; i++) {
-        url.push(req.body.url.name + '/ref=cm_cr_arp_d_paging_btm_2?pageNumber=' + i);
-        //url.push('https://www.amazon.com/SanDisk-Ultra-Class-Memory-SDSDUNC-032G-GN6IN/product-reviews/B0143RT8OY/ref=cm_cr_arp_d_paging_btm_2?pageNumber=' + i);
-
+        url_array.push(req.body.url.name + '/ref=cm_cr_arp_d_paging_btm_2?pageNumber=' + i);
     }
-    console.log(url);
-    for (i in url) {
-        request(url[i], function(error, response, html) {
-            if (!error) {
-                //use cheerio to use jquery to select DOM elements
-                var $ = cheerio.load(html);
+    console.log(url_array);
 
-                $('.review-title').filter(function() {
-                    reviewTitle = $(this);
-                    reviewTitleText = reviewTitle.text();
-                    reviewTitleArr.push(reviewTitleText);
-                })
-                $('.review-date').filter(function() {
-                    reviewDate = $(this);
-                    reviewDateText = reviewDate.text();
-                    reviewDateArr.push(reviewDateText);
-                })
-                $('.review-rating').filter(function() {
-                    reviewRating = $(this);
-                    reviewRatingText = reviewRating.text();
-                    reviewRatingArr.push(reviewRatingText);
-                })
-            }
-        })
-    }
-    for (var i = 0; i < reviewDateArr.length; i++) {
-        var details = {
-            reviewTitle: reviewTitleArr[i],
-            reviewDate: reviewDateArr[i],
-            reviewRating: reviewRatingArr[i]
+    var promises = [];
+
+    _.forEach(url_array, function (url) {
+
+        var options = {
+            method: 'GET',
+            url: url
         };
-        detailsArray.push(details);
-    }
 
-    //console.log("hello");
-    console.log("=======================================================================================");
-    //console.log(reviewDateText);
-    //console.log(reviewDateText);
-    //console.log(reviewRatingText);
-    console.log(detailsArray);
+        var promise = Request.getAsync(options)
+            .then(function (data) {
+                var body = data.body;
+                var $ = cheerio.load(body);
 
-    res.send(detailsArray);
+                var reviews_array = [];
+                $('.review').filter(function (index, element) {
+                    var data = $(this);
+
+                    var json = {
+                        reviewTitle: data.find('.review-title').text(),
+                        reviewDate: data.find('.review-date').text().replace("on ", ""),
+                        reviewRating: data.find('.review-rating').text()
+                        //review: data.find('.review-data').text()
+                    };
+
+                    //pushing the json object into array.
+                    reviews_array.push(json);
+                });
+
+                return reviews_array;
+            });
+
+        promises.push(promise);
+    });
+
+    return Promise.all(promises)
+        .then(function (results) {
+            var data = _.flatten(results);
+            console.log('Returning scraped data: ' + data.length);
+            return res.status(200).send(data);
+        })
+        .catch(function (error) {
+            console.error('Error in scraping: ' + error);
+            return res.status(500).send({error: error.toString()});
+        });
 });
 
 // Get all posts

@@ -12,11 +12,13 @@ import { ReviewsService } from './reviews.service';
 import {DataTableModule} from "angular2-datatable";
 import {MatButtonModule, MatCheckboxModule} from '@angular/material';
 import { AppRoutingModule } from './app.routing';
+import { SearchReviewsPipe } from './search-reviews.pipe';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ReviewsComponent
+    ReviewsComponent,
+    SearchReviewsPipe
   ],
   imports: [
     BrowserModule,
